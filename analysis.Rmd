@@ -1,0 +1,570 @@
+---
+title: "Global Pollution Trends and Future Impact Analysis"
+author: "Pankaj Singh Yadav"
+date: "2026-04-06"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+---
+# Introduction
+
+Pollution is one of the most critical global challenges affecting environmental sustainability and human health. This project analyzes global CO2 emission trends using R programming to understand historical patterns, identify key contributors, and evaluate potential future impacts.
+
+# Dataset
+
+The dataset used in this project is sourced from Our World in Data. It contains country-wise information on CO2 emissions, population, and related environmental indicators across multiple years.
+
+# Analysis
+
+## Q1: Which countries emit the most CO2 globally?
+
+```{r q1_top_countries}
+library(dplyr)
+
+data <- read.csv("data.csv")
+top_countries <- data %>%
+  filter(!is.na(co2)) %>%
+  filter(nchar(iso_code) == 3) %>%
+  group_by(country) %>%
+  summarise(total_co2 = sum(co2, na.rm=TRUE)) %>%
+  arrange(desc(total_co2)) %>%
+  head(10)
+
+print(top_countries)
+```
+
+**Inference:**
+Top countries contributing to CO2 emissions are shown above.
+
+
+## Q2: How has global CO2 emission changed over time?
+
+```{r q2_trend_plot}
+library(ggplot2)
+theme_set(theme_minimal())
+          
+global_trend <- data %>%
+  group_by(year) %>%
+  summarise(total_co2 = sum(co2, na.rm=TRUE))
+
+ggplot(global_trend, aes(x=year, y=total_co2)) +
+  geom_line(color="blue") +
+  labs(title="Global CO2 Emissions Over Time",
+       x="Year",
+       y="Total CO2 Emissions")
+```
+
+**Inference:**
+Global CO2 emissions have shown a continuous increasing trend over time, indicating rising pollution levels.
+
+
+## Q3: Which year recorded the highest global CO2 emissions?
+
+```{r q3_peak_year}
+peak_year <- global_trend[which.max(global_trend$total_co2), ]
+
+peak_year
+
+```
+
+**Inference:**
+The year shown above recorded the highest global CO2 emissions, indicating peak pollution levels.
+
+
+## Q4: How do CO2 emission trends compare among major countries?
+
+```{r q4_country_trends}
+top5_countries <- c("United States", "China", "India", "Russia", "Japan")
+
+filtered_data <- data %>%
+  filter(country %in% top5_countries)
+
+ggplot(filtered_data, aes(x=year, y=co2, color=country)) +
+  geom_line(size=1) +
+  labs(title="CO2 Emission Trends of Major Countries",
+       x="Year",
+       y="CO2 Emissions")
+```
+
+**Inference:**
+The graph compares emission trends of major countries, showing how different nations contribute to global pollution over time.
+
+
+## Q5: How do CO2 emissions per person vary across countries?
+
+```{r q5_per_capita}
+data$co2_per_capita <- data$co2 / data$population
+
+top_per_capita <- data %>%
+  filter(!is.na(co2_per_capita)) %>%
+  filter(nchar(iso_code) == 3) %>%
+  group_by(country) %>%
+  summarise(avg_per_capita = mean(co2_per_capita, na.rm=TRUE)) %>%
+  arrange(desc(avg_per_capita)) %>%
+  head(10)
+
+top_per_capita
+```
+
+**Inference:**
+The results show that some countries have significantly higher emissions per person, indicating greater individual environmental impact.
+
+
+## Q6: What is the distribution of CO2 emissions across countries?
+
+```{r q6_distribution}
+ggplot(data, aes(x=co2)) +
+  geom_histogram(bins=30, fill="steelblue", color="black") +
+  labs(
+    title="Distribution of CO2 Emissions",
+    x="CO2 Emissions",
+    y="Frequency"
+  )
+```
+
+**Inference:**
+The distribution indicates that most countries have relatively low emissions, while a few countries contribute disproportionately high emissions.
+
+
+## Q7: Are there any extreme outliers in CO2 emissions?
+
+```{r q7_boxplot}
+ggplot(data, aes(y=co2)) +
+  geom_boxplot(fill="orange", color="black") +
+  labs(
+    title="Boxplot of CO2 Emissions"
+  )
+```
+
+**Inference:**
+The boxplot clearly highlights extreme outliers, representing countries with exceptionally high emission levels compared to others.
+
+
+## Q8: Is global CO2 emission increasing over time?
+
+```{r q8_trend_direction}
+trend_model <- lm(total_co2 ~ year, data = global_trend)
+
+summary(trend_model)
+```
+
+**Inference:**
+The positive trend indicates that global CO2 emissions are increasing over time, highlighting worsening pollution levels.
+
+
+## Q9: What could be the future trend of CO2 emissions if current patterns continue?
+
+```{r q9_future_prediction}
+global_trend$future_co2 <- global_trend$total_co2 * 1.1
+
+ggplot(global_trend, aes(x=year)) +
+  geom_line(aes(y=total_co2), color="blue") +
+  geom_line(aes(y=future_co2), color="red") +
+  labs(
+    title="Current vs Predicted CO2 Emissions",
+    x="Year",
+    y="CO2 Emissions"
+  )
+```
+
+**Inference:**
+If current trends continue, CO2 emissions are expected to rise further, posing serious environmental risks.
+
+
+## Q10: Which countries should take immediate action based on high emissions?
+
+```{r q10_high_risk}
+high_risk <- data %>%
+  filter(nchar(iso_code) == 3) %>%
+  group_by(country) %>%
+  summarise(total_co2 = sum(co2, na.rm=TRUE)) %>%
+  arrange(desc(total_co2)) %>%
+  head(5)
+
+high_risk
+```
+
+**Inference:**
+Countries with the highest emissions should take immediate action to control pollution and reduce environmental impact.
+
+
+## Q11: How might increasing CO2 emissions impact future environmental conditions?
+
+```{r q11_environment_impact}
+model <- lm(co2 ~ year, data = data)
+
+summary(model)
+```
+
+**Inference:**
+The model shows a positive relationship between year and CO2 emissions, indicating that pollution is increasing over time and may worsen future environmental conditions.
+
+
+## Q12: How can future CO2 emissions be visualized based on current trends?
+
+```{r q12_future_visual}
+ggplot(global_trend, aes(x=year)) +
+  geom_line(aes(y=total_co2), color="blue") +
+  geom_smooth(aes(y=total_co2), method="lm", color="red") +
+  labs(
+    title="Trend Projection of CO2 Emissions",
+    x="Year",
+    y="CO2 Emissions"
+  )
+```
+
+**Inference:**
+The trend line indicates that CO2 emissions are expected to continue rising if current patterns persist.
+
+
+## Q13: Which countries show the fastest growth in CO2 emissions?
+
+```{r q13_growth}
+growth_data <- data %>%
+  filter(nchar(iso_code) == 3) %>%
+  group_by(country) %>%
+  summarise(growth = max(co2, na.rm=TRUE) - min(co2, na.rm=TRUE)) %>%
+  arrange(desc(growth)) %>%
+  head(10)
+
+growth_data
+```
+
+**Inference:**
+These countries have shown the highest increase in emissions over time, indicating rapid industrial or economic growth.
+
+
+## Q14: Which countries are the top polluters in recent years?
+
+```{r q14_recent}
+latest_year <- max(data$year, na.rm=TRUE)
+
+recent_data <- data %>%
+  filter(year == latest_year) %>%
+  filter(nchar(iso_code) == 3) %>%
+  arrange(desc(co2)) %>%
+  head(10)
+
+recent_data[, c("country", "co2")]
+```
+
+**Inference:**
+The most recent data highlights current global pollution leaders, which are key contributors to environmental issues today.
+
+
+## Q15: How do emissions compare among the top 5 countries?
+
+```{r q15_comparison}
+top5 <- c("United States", "China", "India", "Russia", "Japan")
+
+comparison_data <- data %>%
+  filter(country %in% top5)
+
+ggplot(comparison_data, aes(x=year, y=co2, color=country)) +
+  geom_line(size=1) +
+  labs(
+    title="Comparison of CO2 Emissions (Top 5 Countries)",
+    x="Year",
+    y="CO2 Emissions"
+  )
+```
+
+**Inference:**
+The graph shows how major countries differ in their emission trends over time.
+
+
+## Q16: What is the percentage contribution of top countries to total emissions?
+
+```{r q16_percentage}
+total_global <- sum(data$co2, na.rm=TRUE)
+
+top5_data <- data %>%
+  filter(country %in% c("United States", "China", "India", "Russia", "Japan")) %>%
+  group_by(country) %>%
+  summarise(total = sum(co2, na.rm=TRUE))
+
+top5_data$percentage <- (top5_data$total / total_global) * 100
+
+top5_data
+```
+
+**Inference:**
+A small number of countries contribute a large percentage of global emissions.
+
+
+## Q17: Are CO2 emissions increasing at an accelerating rate?
+
+```{r q17_acceleration}
+global_trend$change <- c(NA, diff(global_trend$total_co2))
+
+ggplot(global_trend, aes(x=year, y=change)) +
+  geom_line(color="purple") +
+  labs(
+    title="Yearly Change in CO2 Emissions",
+    x="Year",
+    y="Change in Emissions"
+  )
+```
+
+**Inference:**
+The increasing fluctuations suggest that emissions are not just rising but may be accelerating.
+
+
+## Q18: Which countries have reduced their CO2 emissions over time?
+
+```{r q18_reduction}
+reduction <- data %>%
+  filter(nchar(iso_code) == 3) %>%
+  group_by(country) %>%
+  summarise(change = last(co2) - first(co2)) %>%
+  arrange(change)
+
+head(reduction, 10)
+```
+
+**Inference:**
+Some countries have successfully reduced emissions, indicating effective environmental policies.
+
+
+## Q19: Which countries are at highest risk if current trends continue?
+
+```{r q19_risk}
+risk_data <- growth_data %>%
+  head(5)
+
+risk_data
+```
+
+**Inference:**
+Countries with rapid emission growth are at higher environmental risk in the future.
+
+
+## Q20: How does CO2 emission vary across different time periods?
+
+```{r q20_time_period}
+data$period <- ifelse(data$year < 1980, "Before 1980",
+                ifelse(data$year < 2000, "1980-2000", "After 2000"))
+
+period_data <- data %>%
+  group_by(period) %>%
+  summarise(avg_co2 = mean(co2, na.rm=TRUE))
+
+period_data
+```
+
+**Inference:**
+CO2 emissions have increased significantly in recent decades, especially after 2000, indicating rapid industrial growth and environmental impact.
+
+
+## Q21: How does population size influence total CO2 emissions?
+
+```{r q21_population_effect}
+ggplot(data, aes(x=population, y=co2)) +
+  geom_point(alpha=0.5, color="blue") +
+  labs(
+    title="Population vs CO2 Emissions",
+    x="Population",
+    y="CO2 Emissions"
+  )
+```
+
+**Inference:**
+Countries with larger populations tend to have higher total emissions.
+
+
+## Q22: How do total emissions differ from per capita emissions?
+
+```{r q22_compare}
+ggplot(data, aes(x=co2_per_capita, y=co2)) +
+  geom_point(alpha=0.5, color="red") +
+  labs(
+    title="Per Capita vs Total Emissions",
+    x="CO2 per Capita",
+    y="Total CO2"
+  )
+```
+
+**Inference:**
+Some countries have high total emissions but lower per capita values.
+
+
+## Q23: Which countries have the highest per capita emissions in recent years?
+
+```{r q23_recent_per_capita}
+latest_year <- max(data$year, na.rm=TRUE)
+
+recent_pc <- data %>%
+  filter(year == latest_year) %>%
+  filter(nchar(iso_code) == 3) %>%
+  arrange(desc(co2_per_capita)) %>%
+  head(10)
+
+recent_pc[, c("country","co2_per_capita")]
+```
+
+**Inference:**
+Some smaller countries have extremely high emissions per person.
+
+
+## Q24: What is the smoothed trend of global CO2 emissions?
+
+```{r q24_smooth}
+ggplot(global_trend, aes(x=year, y=total_co2)) +
+  geom_line(color="gray") +
+  geom_smooth(method="loess", color="red") +
+  labs(title="Smoothed CO2 Emission Trend")
+```
+
+**Inference:**
+The smoothed curve highlights the long-term upward trend in emissions.
+
+
+## Q25: How are CO2 emissions distributed across countries?
+
+```{r q25_density}
+ggplot(data, aes(x=co2)) +
+  geom_density(fill="green", alpha=0.5)
+```
+
+**Inference:**
+Most countries cluster at lower emission levels with a long tail of high emitters.
+
+
+## Q26: How have emissions changed in the last decade?
+
+```{r q26_recent_decade}
+recent_data <- data %>%
+  filter(year >= max(year) - 10)
+
+ggplot(recent_data, aes(x=year, y=co2)) +
+  geom_line(color="blue")
+```
+
+**Inference:**
+Recent years show continued increase in emissions.
+
+
+## Q27: Which countries have stable emission patterns over time?
+
+```{r q27_stability}
+stability <- data %>%
+  filter(nchar(iso_code) == 3) %>%
+  group_by(country) %>%
+  summarise(sd_co2 = sd(co2, na.rm=TRUE)) %>%
+  arrange(sd_co2)
+
+head(stability, 10)
+```
+
+**Inference:**
+Countries with low variation show stable emission patterns.
+
+
+## Q28: Is there a correlation between population and CO2 emissions?
+
+```{r q28_correlation}
+cor(data$population, data$co2, use="complete.obs")
+```
+
+**Inference:**
+There is a positive correlation between population and emissions.
+
+
+## Q29: How does log transformation help in understanding emissions?
+
+```{r q29_log}
+ggplot(data, aes(x=log(co2))) +
+  geom_histogram(bins=30, fill="purple")
+```
+
+**Inference:**
+Log transformation reduces skewness and improves visualization.
+
+
+## Q30: How have top contributors changed over time?
+
+```{r q30_top_trend}
+top_countries_names <- top_countries$country
+
+trend_top <- data %>%
+  filter(country %in% top_countries_names)
+
+ggplot(trend_top, aes(x=year, y=co2, color=country)) +
+  geom_line()
+```
+**Inference:**
+Top contributors remain consistent over time.
+
+
+## Q31: What share do top countries contribute globally?
+
+```{r q31_share}
+top_total <- sum(top_countries$total_co2)
+global_total <- sum(data$co2, na.rm=TRUE)
+
+top_total / global_total * 100
+```
+
+**Inference:**
+Top countries contribute a major portion of global emissions.
+
+
+## Q32: Which countries have the lowest emissions?
+
+```{r q32_low}
+low_emitters <- data %>%
+  filter(nchar(iso_code) == 3) %>%
+  arrange(co2) %>%
+  head(10)
+
+low_emitters[, c("country","co2")]
+```
+
+**Inference:**
+Some countries contribute very little to global emissions.
+
+
+## Q33: How variable are emissions globally?
+
+```{r q33_variability}
+var(data$co2, na.rm=TRUE)
+```
+
+**Inference:**
+High variance indicates unequal emission distribution.
+
+
+## Q34: How does emission growth indicate future risk?
+
+```{r q34_risk_plot}
+ggplot(growth_data, aes(x=reorder(country, growth), y=growth)) +
+  geom_bar(stat="identity", fill="red") +
+  coord_flip()
+```
+
+**Inference:**
+Countries with highest growth pose future environmental risks.
+
+
+## Q35: What overall patterns can be observed in global pollution trends?
+
+```{r q35_summary}
+summary(global_trend$total_co2)
+```
+
+**Inference:**
+Global emissions show a clear increasing pattern with significant disparities across countries.
+
+
+# Key Insights
+
+- Global CO2 emissions have consistently increased over time.
+- A small number of countries contribute the majority of emissions.
+- Per capita emissions vary significantly across countries.
+- Rapid emission growth in some countries indicates future environmental risk.
+- If current trends continue, pollution levels will worsen in the future.
+
+# Conclusion
+
+This project analyzed global pollution trends using CO2 emission data. The results show a clear increase in emissions over time, with certain countries contributing disproportionately. Future projections suggest that without intervention, environmental conditions may deteriorate further. Therefore, immediate global action is required to reduce emissions and promote sustainability.
