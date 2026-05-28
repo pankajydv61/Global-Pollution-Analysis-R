@@ -1,37 +1,31 @@
-# 🌍 Global Pollution Trends and Future Impact Analysis using R
+# Global Pollution Trends and Future Impact Analysis
 
-## 📌 Project Overview
+## Overview
+This project analyzes global CO2 emission trends using R programming.
 
-This project analyzes global CO2 emission trends using R. It explores historical data, identifies major contributors, and evaluates future environmental impact.
+## Features
+- Data Cleaning
+- Exploratory Data Analysis
+- Data Visualization
+- Correlation Analysis
+- Regression Modeling
+- Prediction on Unseen Data
 
-## 🛠 Tools Used
+## Tools & Libraries
+- R
+- ggplot2
+- dplyr
+- caret
+- tidyverse
 
-* R Programming
-* ggplot2
-* dplyr
-* R Markdown
-
-## 📊 Dataset
-
+## Dataset
 Source: Our World in Data
-https://ourworldindata.org/co2-and-greenhouse-gas-emissions
 
-## 🔍 Key Analysis
+## Key Insights
+- Global emissions are increasing
+- Emissions are unevenly distributed
+- Population positively affects CO2 emissions
 
-* Top CO2 emitting countries
-* Emission trends over time
-* Per capita emissions
-* Future prediction using regression
-* Data visualization
-
-## 📈 Key Insights
-
-* Global emissions are increasing steadily
-* Few countries contribute most emissions
-* Pollution trends indicate future risks
-
-## 🚀 Conclusion
-
-The project highlights the importance of data analysis in understanding environmental issues and supports decision-making for a sustainable future.
-# Global-Pollution-Analysis-R
-R-based analysis of global CO2 emissions with visualization and future impact insights.
+## Future Scope
+- Advanced machine learning models
+- Real-time environmental monitoring
