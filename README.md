@@ -75,6 +75,6 @@ The analysis indicates a significant increase in global CO2 emissions over time.
 
 ## Live Project Links
 
-- GitHub Repository: https://github.com/pankajydv61/Global-Pollution-Analysis-R
+- GitHub Repository: https://pankajydv61.github.io/Global-Pollution-Analysis-R/analysis.html
 - GitHub Pages Website: https://pankajydv61.github.io/Global-Pollution-Analysis-R/
 - RPubs Report: https://rpubs.com/Pankaj_lpu_2025/1429083
